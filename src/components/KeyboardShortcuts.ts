@@ -1,5 +1,7 @@
 import { useToolStore } from '../state/toolStore'
 import { useProjectStore } from '../state/projectStore'
+import { exportProject } from '../persistence/export'
+import { importProject } from '../persistence/import'
 
 export function setupKeyboardShortcuts(): void {
   document.addEventListener('keydown', (e) => {
@@ -31,6 +33,16 @@ export function setupKeyboardShortcuts(): void {
     if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
       e.preventDefault()
       projectStore.redo()
+    }
+
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault()
+      exportProject(useProjectStore.getState().project)
+    }
+
+    if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+      e.preventDefault()
+      importProject().then((p) => useProjectStore.getState().loadProject(p)).catch(() => {})
     }
 
     if (e.key === 'Delete' || e.key === 'Backspace') {

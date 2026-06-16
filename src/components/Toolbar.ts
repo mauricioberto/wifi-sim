@@ -1,5 +1,7 @@
 import { useToolStore } from '../state/toolStore'
 import { useProjectStore } from '../state/projectStore'
+import { exportProject } from '../persistence/export'
+import { importProject } from '../persistence/import'
 import type { ToolType } from '../domain/types'
 
 interface ToolButton {
@@ -43,9 +45,36 @@ export function renderToolbar(containerId: string): void {
     container.appendChild(btn)
   }
 
-  const sep = document.createElement('div')
-  sep.className = 'w-8 h-px bg-gray-700 my-1'
-  container.appendChild(sep)
+  const sep1 = document.createElement('div')
+  sep1.className = 'w-8 h-px bg-gray-700 my-1'
+  container.appendChild(sep1)
+
+  const saveBtn = document.createElement('button')
+  saveBtn.className = 'w-10 h-10 flex items-center justify-center rounded-lg text-sm text-green-400 hover:bg-gray-700 transition-colors'
+  saveBtn.title = 'Salvar (Ctrl+S)'
+  saveBtn.textContent = '💾'
+  saveBtn.addEventListener('click', () => {
+    exportProject(useProjectStore.getState().project)
+  })
+  container.appendChild(saveBtn)
+
+  const loadBtn = document.createElement('button')
+  loadBtn.className = 'w-10 h-10 flex items-center justify-center rounded-lg text-sm text-blue-400 hover:bg-gray-700 transition-colors'
+  loadBtn.title = 'Carregar (Ctrl+O)'
+  loadBtn.textContent = '📂'
+  loadBtn.addEventListener('click', async () => {
+    try {
+      const project = await importProject()
+      useProjectStore.getState().loadProject(project)
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Erro ao carregar')
+    }
+  })
+  container.appendChild(loadBtn)
+
+  const sep2 = document.createElement('div')
+  sep2.className = 'w-8 h-px bg-gray-700 my-1'
+  container.appendChild(sep2)
 
   const clearBtn = document.createElement('button')
   clearBtn.className = 'w-10 h-10 flex items-center justify-center rounded-lg text-sm text-red-400 hover:bg-gray-700 transition-colors'
