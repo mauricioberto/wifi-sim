@@ -1,0 +1,58 @@
+import type { Material } from './types';
+
+export const MATERIAL_LIBRARY: Record<string, Material> = {
+  internal_wall: {
+    category: 'internal_wall',
+    label: 'Parede Interna (Drywall)',
+    labelEn: 'Internal Wall (Drywall)',
+    color: '#8B4513',
+    attenuation24: 3,
+    attenuation5: 5,
+    geometry: 'line',
+  },
+  external_wall: {
+    category: 'external_wall',
+    label: 'Parede Externa (Tijolo/Concreto)',
+    labelEn: 'External Wall (Brick/Concrete)',
+    color: '#2F2F2F',
+    attenuation24: 8,
+    attenuation5: 15,
+    geometry: 'line',
+  },
+  glass: {
+    category: 'glass',
+    label: 'Vidro / Janela',
+    labelEn: 'Glass / Window',
+    color: '#87CEEB',
+    attenuation24: 2,
+    attenuation5: 3,
+    geometry: 'line',
+  },
+  door: {
+    category: 'door',
+    label: 'Porta (Madeira)',
+    labelEn: 'Door (Wood)',
+    color: '#D2B48C',
+    attenuation24: 1,
+    attenuation5: 2,
+    geometry: 'line',
+  },
+  pallet: {
+    category: 'pallet',
+    label: 'Palete / Estoque',
+    labelEn: 'Pallet / Stock',
+    color: '#A0522D',
+    attenuation24: 6,
+    attenuation5: 10,
+    geometry: 'rect',
+  },
+  column: {
+    category: 'column',
+    label: 'Coluna / Pilar',
+    labelEn: 'Column / Pillar',
+    color: '#696969',
+    attenuation24: 12,
+    attenuation5: 20,
+    geometry: 'circle',
+  },
+};
