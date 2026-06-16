@@ -4,6 +4,9 @@ import { StructuresLayer } from './layers/StructuresLayer'
 import { APLayer } from './layers/APLayer'
 import { HeatmapLayer } from './layers/HeatmapLayer'
 import { SelectionLayer } from './layers/SelectionLayer'
+import { DrawTool } from './tools/DrawTool'
+import { EraseTool } from './tools/EraseTool'
+import { useProjectStore } from '../state/projectStore'
 
 interface StageState {
   isPanning: boolean
@@ -18,7 +21,9 @@ export class CanvasStage {
   readonly apLayer: APLayer
   readonly heatmap: HeatmapLayer
   readonly selection: SelectionLayer
+  readonly drawTool: DrawTool
   private state: StageState
+  private unsubStructures: (() => void) | null = null
 
   constructor(containerId: string) {
     const container = document.getElementById(containerId) as HTMLDivElement | null
@@ -45,9 +50,19 @@ export class CanvasStage {
       this.selection.layer,
     )
 
+    this.drawTool = new DrawTool(this.stage)
+    new EraseTool(this.stage)
+
     this.state = { isPanning: false, spacePressed: false, lastPos: null }
     this.setupPanZoom()
     this.setupResize()
+    this.setupStoreSync()
+  }
+
+  private setupStoreSync(): void {
+    this.unsubStructures = useProjectStore.subscribe((s) => {
+      this.structures.render(s.project.structures)
+    })
   }
 
   private setupPanZoom(): void {
@@ -128,6 +143,8 @@ export class CanvasStage {
   }
 
   destroy(): void {
+    this.unsubStructures?.()
+    this.drawTool.destroy()
     this.background.destroy()
     this.structures.destroy()
     this.apLayer.destroy()
