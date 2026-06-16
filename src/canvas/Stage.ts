@@ -6,6 +6,7 @@ import { HeatmapLayer } from './layers/HeatmapLayer'
 import { SelectionLayer } from './layers/SelectionLayer'
 import { DrawTool } from './tools/DrawTool'
 import { EraseTool } from './tools/EraseTool'
+import { APTool } from './tools/APTool'
 import { useProjectStore } from '../state/projectStore'
 
 interface StageState {
@@ -22,6 +23,7 @@ export class CanvasStage {
   readonly heatmap: HeatmapLayer
   readonly selection: SelectionLayer
   readonly drawTool: DrawTool
+  readonly apTool: APTool
   private state: StageState
   private unsubStructures: (() => void) | null = null
 
@@ -51,6 +53,7 @@ export class CanvasStage {
     )
 
     this.drawTool = new DrawTool(this.stage)
+    this.apTool = new APTool(this.stage)
     new EraseTool(this.stage)
 
     this.state = { isPanning: false, spacePressed: false, lastPos: null }
@@ -62,6 +65,7 @@ export class CanvasStage {
   private setupStoreSync(): void {
     this.unsubStructures = useProjectStore.subscribe((s) => {
       this.structures.render(s.project.structures)
+      this.apLayer.render(s.project.accessPoints)
     })
   }
 
@@ -145,6 +149,7 @@ export class CanvasStage {
   destroy(): void {
     this.unsubStructures?.()
     this.drawTool.destroy()
+    this.apTool.destroy()
     this.background.destroy()
     this.structures.destroy()
     this.apLayer.destroy()
