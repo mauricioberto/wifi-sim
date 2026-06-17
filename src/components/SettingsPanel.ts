@@ -1,4 +1,5 @@
 import { useSettingsStore } from '../state/settingsStore'
+import { useProjectStore } from '../state/projectStore'
 
 export function renderSettingsPanel(containerId: string): void {
   const container = document.getElementById(containerId)
@@ -51,12 +52,55 @@ export function renderSettingsPanel(containerId: string): void {
   })
   container.appendChild(resSelect)
 
+  createSection(container, 'Plano de Fundo')
+
+  const bgUploadBtn = document.createElement('button')
+  bgUploadBtn.className = 'w-full bg-gray-200 hover:bg-gray-300 rounded px-3 py-1.5 text-sm mb-2'
+  bgUploadBtn.textContent = 'Selecionar Imagem...'
+
+  const bgRemoveBtn = document.createElement('button')
+  bgRemoveBtn.className = 'w-full bg-red-100 hover:bg-red-200 text-red-700 rounded px-3 py-1.5 text-sm mb-3'
+  bgRemoveBtn.textContent = 'Remover Fundo'
+  bgRemoveBtn.style.display = 'none'
+
+  const fileInput = document.createElement('input')
+  fileInput.type = 'file'
+  fileInput.accept = 'image/*'
+  fileInput.style.display = 'none'
+
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      useProjectStore.getState().setBackground(e.target?.result as string)
+    }
+    reader.readAsDataURL(file)
+  })
+
+  bgUploadBtn.addEventListener('click', () => fileInput.click())
+  bgRemoveBtn.addEventListener('click', () => {
+    useProjectStore.getState().setBackground(undefined)
+  })
+
+  container.appendChild(bgUploadBtn)
+  container.appendChild(bgRemoveBtn)
+  container.appendChild(fileInput)
+
+  const updateBgButtons = () => {
+    const bg = useProjectStore.getState().project.backgroundImage
+    bgUploadBtn.textContent = bg ? 'Trocar Imagem...' : 'Selecionar Imagem...'
+    bgRemoveBtn.style.display = bg ? 'block' : 'none'
+  }
+
   const resEl = resSelect as HTMLSelectElement
   useSettingsStore.subscribe((s) => {
     if (s.frequency === '2.4') (freq24.querySelector('input') as HTMLInputElement).checked = true
     else (freq5.querySelector('input') as HTMLInputElement).checked = true
     resEl.value = String(s.heatmapResolution)
   })
+  useProjectStore.subscribe(() => updateBgButtons())
+  updateBgButtons()
 }
 
 function createSection(parent: HTMLElement, text: string): void {

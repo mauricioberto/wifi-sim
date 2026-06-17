@@ -73,6 +73,8 @@ export class CanvasStage {
     this.setupPanZoom()
     this.setupResize()
     this.setupStoreSync()
+    const initialBg = useProjectStore.getState().project.backgroundImage
+    this.loadBackgroundImage(initialBg)
   }
 
   private scheduleSimulation(): void {
@@ -103,10 +105,21 @@ export class CanvasStage {
     )
   }
 
+  private loadBackgroundImage(dataUrl?: string): void {
+    if (dataUrl) {
+      const img = new window.Image()
+      img.onload = () => this.background.setBackgroundImage(img)
+      img.src = dataUrl
+    } else {
+      this.background.setBackgroundImage(null)
+    }
+  }
+
   private setupStoreSync(): void {
     this.unsubStructures = useProjectStore.subscribe((s) => {
       this.structures.render(s.project.structures)
       this.apLayer.render(s.project.accessPoints)
+      this.loadBackgroundImage(s.project.backgroundImage)
       this.scheduleSimulation()
     })
     useSettingsStore.subscribe(() => {

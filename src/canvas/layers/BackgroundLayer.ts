@@ -25,7 +25,10 @@ export class BackgroundLayer {
       this.image = null
     }
     if (img) {
-      this.image = new Konva.Image({ image: img, x: 0, y: 0 })
+      const stage = this.layer.getStage()
+      const w = stage?.width() ?? img.naturalWidth
+      const h = stage?.height() ?? img.naturalHeight
+      this.image = new Konva.Image({ image: img, x: 0, y: 0, width: w, height: h })
       this.layer.add(this.image)
       this.image.moveToBottom()
     }
