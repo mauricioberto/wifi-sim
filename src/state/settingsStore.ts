@@ -1,4 +1,4 @@
-import { create } from 'zustand'
+import { createStore } from 'zustand/vanilla'
 import type { Frequency, GridSettings } from '../domain/types'
 
 interface SettingsState {
@@ -14,7 +14,7 @@ interface SettingsState {
   setAutoRecalculate: (val: boolean) => void
 }
 
-export const useSettingsStore = create<SettingsState>((set) => ({
+export const useSettingsStore = createStore<SettingsState>((set) => ({
   frequency: '2.4',
   grid: { enabled: true, size: 20 },
   heatmapVisible: true,

@@ -1,4 +1,4 @@
-import { create } from 'zustand'
+import { createStore } from 'zustand/vanilla'
 import type { Structure, AccessPoint, Project, Frequency } from '../domain/types'
 
 interface ProjectState {
@@ -36,7 +36,7 @@ function createEmptyProject(name = 'Novo Projeto'): Project {
   }
 }
 
-export const useProjectStore = create<ProjectState>((set, get) => ({
+export const useProjectStore = createStore<ProjectState>((set, get) => ({
   project: createEmptyProject(),
   selectedIds: [],
   undoStack: [],
