@@ -33,16 +33,15 @@ export class DrawTool {
       if (!pos) return
 
       this.drawing = true
-      this.startPos = this.snap(pos)
+      this.startPos = pos
     })
 
     this.stage.on('mousemove', () => {
       if (!this.drawing || !this.startPos) return
 
-      const pos = this.stage.getPointerPosition()
-      if (!pos) return
+      const endPos = this.stage.getPointerPosition()
+      if (!endPos) return
 
-      const snapped = this.snap(pos)
       const tool = useToolStore.getState().activeTool
 
       if (this.previewShape) {
@@ -51,7 +50,7 @@ export class DrawTool {
 
       if (tool === 'column') {
         const radius = Math.max(5, Math.sqrt(
-          (snapped.x - this.startPos.x) ** 2 + (snapped.y - this.startPos.y) ** 2
+          (endPos.x - this.startPos.x) ** 2 + (endPos.y - this.startPos.y) ** 2
         ))
         this.previewShape = new Konva.Circle({
           x: this.startPos.x,
@@ -63,10 +62,10 @@ export class DrawTool {
           fill: 'rgba(105,105,105,0.2)',
         })
       } else if (tool === 'pallet') {
-        const x = Math.min(this.startPos.x, snapped.x)
-        const y = Math.min(this.startPos.y, snapped.y)
-        const w = Math.abs(snapped.x - this.startPos.x)
-        const h = Math.abs(snapped.y - this.startPos.y)
+        const x = Math.min(this.startPos.x, endPos.x)
+        const y = Math.min(this.startPos.y, endPos.y)
+        const w = Math.abs(endPos.x - this.startPos.x)
+        const h = Math.abs(endPos.y - this.startPos.y)
         this.previewShape = new Konva.Rect({
           x, y, width: w, height: h,
           stroke: '#A0522D',
@@ -76,7 +75,7 @@ export class DrawTool {
         })
       } else {
         this.previewShape = new Konva.Line({
-          points: [this.startPos.x, this.startPos.y, snapped.x, snapped.y],
+          points: [this.startPos.x, this.startPos.y, endPos.x, endPos.y],
           stroke: this.getStrokeColor(tool),
           strokeWidth: 4,
           dash: [5, 5],
@@ -93,11 +92,10 @@ export class DrawTool {
         return
       }
 
-      const pos = this.stage.getPointerPosition()
-      if (pos) {
-        const snapped = this.snap(pos)
+      const endPos = this.stage.getPointerPosition()
+      if (endPos) {
         const tool = useToolStore.getState().activeTool
-        this.commitShape(tool, this.startPos, snapped)
+        this.commitShape(tool, this.startPos, endPos)
       }
 
       this.drawing = false
@@ -108,15 +106,6 @@ export class DrawTool {
       }
       this.previewLayer.batchDraw()
     })
-  }
-
-  private snap(pos: Point): Point {
-    const grid = useProjectStore.getState().project.grid
-    if (!grid.enabled) return pos
-    return {
-      x: Math.round(pos.x / grid.size) * grid.size,
-      y: Math.round(pos.y / grid.size) * grid.size,
-    }
   }
 
   private getStrokeColor(tool: ToolType): string {
