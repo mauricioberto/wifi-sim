@@ -24,6 +24,7 @@ export class APTool {
 
   private setup(): void {
     this.stage.on('mousedown', (e) => {
+      if (this.stage.container().dataset.panning === 'true') return
       const tool = useToolStore.getState().activeTool
       if (tool !== 'ap-omni' && tool !== 'ap-directional') return
       if (e.target !== this.stage) return

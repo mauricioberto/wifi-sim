@@ -132,6 +132,7 @@ export class CanvasStage {
       if (e.code === 'Space' && !e.repeat) {
         e.preventDefault()
         this.state.spacePressed = true
+        this.stage.container().dataset.panning = 'true'
         this.stage.container().style.cursor = 'grab'
       }
     })
@@ -140,6 +141,7 @@ export class CanvasStage {
       if (e.code === 'Space') {
         this.state.spacePressed = false
         this.state.isPanning = false
+        this.stage.container().dataset.panning = 'false'
         this.stage.container().style.cursor = 'default'
       }
     })
