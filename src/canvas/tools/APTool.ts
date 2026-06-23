@@ -22,6 +22,14 @@ export class APTool {
     this.setup()
   }
 
+  private worldPos(e: MouseEvent): Point {
+    const rect = this.stage.container().getBoundingClientRect()
+    return {
+      x: (e.clientX - rect.left - this.stage.x()) / this.stage.scaleX(),
+      y: (e.clientY - rect.top - this.stage.y()) / this.stage.scaleY(),
+    }
+  }
+
   private setup(): void {
     this.stage.on('mousedown', (e) => {
       if (this.stage.container().dataset.panning === 'true') return
@@ -29,8 +37,7 @@ export class APTool {
       if (tool !== 'ap-omni' && tool !== 'ap-directional') return
       if (e.target !== this.stage) return
 
-      const pos = this.stage.getPointerPosition()
-      if (!pos) return
+      const pos = this.worldPos(e.evt)
 
       if (tool === 'ap-omni') {
         this.commitOmni(pos)
@@ -41,13 +48,12 @@ export class APTool {
       this.startPos = pos
     })
 
-    this.stage.on('mousemove', () => {
+    this.stage.on('mousemove', (e) => {
       if (!this.drawing || !this.startPos) return
       const tool = useToolStore.getState().activeTool
       if (tool !== 'ap-directional') return
 
-      const pos = this.stage.getPointerPosition()
-      if (!pos) return
+      const pos = this.worldPos(e.evt)
 
       if (this.previewGroup) {
         this.previewGroup.destroy()
@@ -58,15 +64,13 @@ export class APTool {
       this.previewLayer.batchDraw()
     })
 
-    this.stage.on('mouseup', () => {
+    this.stage.on('mouseup', (e) => {
       if (!this.drawing || !this.startPos) return
       const tool = useToolStore.getState().activeTool
       if (tool !== 'ap-directional') return
 
-      const pos = this.stage.getPointerPosition()
-      if (pos && this.startPos) {
-        this.commitDirectional(this.startPos, pos)
-      }
+      const pos = this.worldPos(e.evt)
+      this.commitDirectional(this.startPos, pos)
 
       this.drawing = false
       this.startPos = null

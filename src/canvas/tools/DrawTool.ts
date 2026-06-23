@@ -23,6 +23,14 @@ export class DrawTool {
     this.setupEvents()
   }
 
+  private worldPos(e: MouseEvent): Point {
+    const rect = this.stage.container().getBoundingClientRect()
+    return {
+      x: (e.clientX - rect.left - this.stage.x()) / this.stage.scaleX(),
+      y: (e.clientY - rect.top - this.stage.y()) / this.stage.scaleY(),
+    }
+  }
+
   private setupEvents(): void {
     this.stage.on('mousedown', (e) => {
       if (e.target !== this.stage) return
@@ -30,19 +38,14 @@ export class DrawTool {
       const tool = useToolStore.getState().activeTool
       if (tool === 'select' || tool === 'erase' || tool === 'ap-omni' || tool === 'ap-directional') return
 
-      const pos = this.stage.getPointerPosition()
-      if (!pos) return
-
       this.drawing = true
-      this.startPos = pos
+      this.startPos = this.worldPos(e.evt)
     })
 
-    this.stage.on('mousemove', () => {
+    this.stage.on('mousemove', (e) => {
       if (!this.drawing || !this.startPos) return
 
-      const endPos = this.stage.getPointerPosition()
-      if (!endPos) return
-
+      const endPos = this.worldPos(e.evt)
       const tool = useToolStore.getState().activeTool
 
       if (this.previewShape) {
@@ -87,17 +90,15 @@ export class DrawTool {
       this.previewLayer.batchDraw()
     })
 
-    this.stage.on('mouseup', () => {
+    this.stage.on('mouseup', (e) => {
       if (!this.drawing || !this.startPos) {
         this.drawing = false
         return
       }
 
-      const endPos = this.stage.getPointerPosition()
-      if (endPos) {
-        const tool = useToolStore.getState().activeTool
-        this.commitShape(tool, this.startPos, endPos)
-      }
+      const endPos = this.worldPos(e.evt)
+      const tool = useToolStore.getState().activeTool
+      this.commitShape(tool, this.startPos, endPos)
 
       this.drawing = false
       this.startPos = null
