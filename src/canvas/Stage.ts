@@ -15,6 +15,7 @@ interface StageState {
   isPanning: boolean
   spacePressed: boolean
   lastPos: { x: number; y: number } | null
+  stageAtPanStart: { x: number; y: number } | null
 }
 
 export class CanvasStage {
@@ -69,7 +70,7 @@ export class CanvasStage {
       )
     })
 
-    this.state = { isPanning: false, spacePressed: false, lastPos: null }
+    this.state = { isPanning: false, spacePressed: false, lastPos: null, stageAtPanStart: null }
     this.setupPanZoom()
     this.setupResize()
     this.setupStoreSync()
@@ -141,6 +142,8 @@ export class CanvasStage {
       if (e.code === 'Space') {
         this.state.spacePressed = false
         this.state.isPanning = false
+        this.state.lastPos = null
+        this.state.stageAtPanStart = null
         this.stage.container().dataset.panning = 'false'
         this.stage.container().style.cursor = 'default'
       }
@@ -151,23 +154,24 @@ export class CanvasStage {
       e.evt.preventDefault()
       this.state.isPanning = true
       this.state.lastPos = { x: e.evt.clientX, y: e.evt.clientY }
+      this.state.stageAtPanStart = { x: this.stage.x(), y: this.stage.y() }
       this.stage.container().style.cursor = 'grabbing'
       this.stage.draggable(false)
     })
 
     this.stage.on('mousemove', (e) => {
-      if (!this.state.isPanning || !this.state.lastPos) return
+      if (!this.state.isPanning || !this.state.lastPos || !this.state.stageAtPanStart) return
       const dx = e.evt.clientX - this.state.lastPos.x
       const dy = e.evt.clientY - this.state.lastPos.y
-      this.stage.x(this.stage.x() + dx)
-      this.stage.y(this.stage.y() + dy)
-      this.state.lastPos = { x: e.evt.clientX, y: e.evt.clientY }
+      this.stage.x(this.state.stageAtPanStart.x + dx)
+      this.stage.y(this.state.stageAtPanStart.y + dy)
     })
 
     this.stage.on('mouseup', () => {
       if (this.state.isPanning) {
         this.state.isPanning = false
         this.state.lastPos = null
+        this.state.stageAtPanStart = null
         this.stage.container().style.cursor = this.state.spacePressed ? 'grab' : 'default'
       }
     })
