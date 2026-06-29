@@ -39,6 +39,7 @@ export class CanvasStage {
   private unsubBgTransform: (() => void) | null = null
   private simManager: SimulationManager
   private debounceTimer: ReturnType<typeof setTimeout> | null = null
+  private lastLoadedBg: string | undefined
 
   constructor(containerId: string) {
     const container = document.getElementById(containerId) as HTMLDivElement | null
@@ -90,8 +91,7 @@ export class CanvasStage {
     this.setupStoreSync()
     this.setupSelectionSync()
     const initialBg = useProjectStore.getState().project.backgroundImage
-    const initialTransform = useProjectStore.getState().project.backgroundTransform
-    this.loadBackgroundImage(initialBg, initialTransform)
+    this.loadBackgroundImage(initialBg)
   }
 
   private scheduleSimulation(): void {
@@ -122,23 +122,29 @@ export class CanvasStage {
     )
   }
 
-  private loadBackgroundImage(dataUrl?: string, transform?: { x: number; y: number; scaleX: number; scaleY: number; rotation: number }): void {
+  private loadBackgroundImage(dataUrl?: string): void {
+    if (dataUrl === this.lastLoadedBg) return
+    this.lastLoadedBg = dataUrl
     if (dataUrl) {
-      const defaultTransform = { x: 0, y: 0, scaleX: 1, scaleY: 1, rotation: 0 }
-      this.bgImageLayer.setImage(dataUrl, transform ?? defaultTransform)
+      const project = useProjectStore.getState().project
+      this.bgImageLayer.setImage(dataUrl, project.backgroundTransform ?? { x: 0, y: 0, scaleX: 1, scaleY: 1, rotation: 0 })
     } else {
       this.bgImageLayer.clearImage()
     }
   }
 
   private setupRulerSync(): void {
+    let rafId = 0
     const updateRuler = () => {
-      const container = this.stage.container()
-      const vpW = container.clientWidth
-      const vpH = container.clientHeight
-      this.ruler.update(this.stage.x(), this.stage.y(), this.stage.scaleX(), vpW, vpH)
+      cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(() => {
+        const container = this.stage.container()
+        const vpW = container.clientWidth
+        const vpH = container.clientHeight
+        this.ruler.update(this.stage.x(), this.stage.y(), this.stage.scaleX(), vpW, vpH)
+      })
     }
-    this.stage.on('dragend', updateRuler)
+    this.stage.on('mousemove', updateRuler)
     this.stage.on('wheel', updateRuler)
     const ro = new ResizeObserver(updateRuler)
     ro.observe(this.stage.container())
@@ -155,11 +161,11 @@ export class CanvasStage {
     this.unsubStructures = useProjectStore.subscribe((s) => {
       this.structures.render(s.project.structures)
       this.apLayer.render(s.project.accessPoints)
-      this.loadBackgroundImage(s.project.backgroundImage, s.project.backgroundTransform)
+      this.loadBackgroundImage(s.project.backgroundImage)
       this.scheduleSimulation()
     })
     this.unsubBgTransform = useProjectStore.subscribe((s) => {
-      if (s.project.backgroundTransform && this.bgImageLayer) {
+      if (s.project.backgroundTransform && this.bgImageLayer?.hasImage()) {
         this.bgImageLayer.applyTransform(s.project.backgroundTransform)
       }
     })
