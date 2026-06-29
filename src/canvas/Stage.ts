@@ -13,6 +13,7 @@ import { SelectTool } from './tools/SelectTool'
 import { useProjectStore } from '../state/projectStore'
 import { useSettingsStore } from '../state/settingsStore'
 import { SimulationManager } from '../simulation/simulationManager'
+import { WORLD_SIZE } from '../constants'
 
 interface StageState {
   isPanning: boolean
@@ -127,7 +128,28 @@ export class CanvasStage {
     this.lastLoadedBg = dataUrl
     if (dataUrl) {
       const project = useProjectStore.getState().project
-      this.bgImageLayer.setImage(dataUrl, project.backgroundTransform ?? { x: 0, y: 0, scaleX: 1, scaleY: 1, rotation: 0 })
+      if (project.backgroundTransform) {
+        this.bgImageLayer.setImage(dataUrl, project.backgroundTransform)
+      } else {
+        const img = new window.Image()
+        img.onload = () => {
+          const worldSize = WORLD_SIZE
+          const pad = 100
+          const maxW = worldSize - pad * 2
+          const maxH = worldSize - pad * 2
+          const scaleX = maxW / img.naturalWidth
+          const scaleY = maxH / img.naturalHeight
+          const scale = Math.min(scaleX, scaleY, 1)
+          const w = img.naturalWidth * scale
+          const h = img.naturalHeight * scale
+          const x = (worldSize - w) / 2
+          const y = (worldSize - h) / 2
+          const transform = { x, y, scaleX: scale, scaleY: scale, rotation: 0 }
+          useProjectStore.getState().setBackgroundTransform(transform)
+          this.bgImageLayer.setImage(dataUrl, transform)
+        }
+        img.src = dataUrl
+      }
     } else {
       this.bgImageLayer.clearImage()
     }

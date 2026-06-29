@@ -24,8 +24,17 @@ export class SelectTool {
         return
       }
 
+      // Don't interfere with transformer anchors
+      let node: Konva.Node | null = target
+      while (node && node !== this.stage) {
+        if (node instanceof Konva.Transformer) return
+        node = node.getParent()
+      }
+
       if (target.name() === 'bg-image') {
-        this.selectBgImage()
+        if (this.bgImageLayer.hasImage()) {
+          this.selectBgImage()
+        }
         return
       }
 
