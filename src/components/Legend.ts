@@ -5,7 +5,7 @@ export function renderLegend(containerId: string): void {
   if (!container) return
 
   container.innerHTML = ''
-  container.className = 'absolute bottom-0 left-14 right-0 h-10 bg-white border-t border-gray-200 flex items-center px-4 text-xs text-gray-600 gap-1 select-none'
+  container.className = 'absolute bottom-0 left-14 right-0 h-10 bg-slate-100 border-t border-slate-300 flex items-center px-4 text-xs text-gray-600 gap-1 select-none'
 
   const label = document.createElement('span')
   label.textContent = 'dBm:'

@@ -5,7 +5,7 @@ export function renderSettingsPanel(containerId: string): void {
   const container = document.getElementById(containerId)
   if (!container) return
 
-  container.className = 'w-72 bg-white border-l border-gray-200 p-4 text-sm select-none'
+  container.className = 'w-72 bg-slate-100 border-l border-slate-300 p-4 text-sm select-none'
   container.innerHTML = ''
 
   createSection(container, 'Configurações')

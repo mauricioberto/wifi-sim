@@ -11,7 +11,7 @@ const app = document.querySelector<HTMLDivElement>('#app')!
 app.innerHTML = `
   <div class="flex h-full w-full">
     <div id="toolbar" class="z-10"></div>
-    <div id="canvas-container" class="flex-1 relative bg-gray-100 overflow-hidden"></div>
+    <div id="canvas-container" class="flex-1 relative bg-white overflow-hidden"></div>
     <div id="settings-panel"></div>
   </div>
   <div id="legend"></div>

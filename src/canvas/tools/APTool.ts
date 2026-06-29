@@ -35,7 +35,7 @@ export class APTool {
       if (this.stage.container().dataset.panning === 'true') return
       const tool = useToolStore.getState().activeTool
       if (tool !== 'ap-omni' && tool !== 'ap-directional') return
-      if (e.target !== this.stage) return
+      if (e.target !== this.stage && e.target.name() !== 'bg-image') return
 
       const pos = this.worldPos(e.evt)
 

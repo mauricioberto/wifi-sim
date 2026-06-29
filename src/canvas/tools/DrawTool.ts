@@ -33,7 +33,7 @@ export class DrawTool {
 
   private setupEvents(): void {
     this.stage.on('mousedown', (e) => {
-      if (e.target !== this.stage) return
+      if (e.target !== this.stage && e.target.name() !== 'bg-image') return
       if (this.stage.container().dataset.panning === 'true') return
       const tool = useToolStore.getState().activeTool
       if (tool === 'select' || tool === 'erase' || tool === 'ap-omni' || tool === 'ap-directional') return
