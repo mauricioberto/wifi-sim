@@ -32,13 +32,14 @@ export class APLayer {
   }
 
   private createAPGroup(ap: AccessPoint): Konva.Group {
-    const group = new Konva.Group({ id: ap.id, draggable: true })
     const pos = ap.position
+
+    const group = new Konva.Group({ id: ap.id, draggable: true, x: pos.x, y: pos.y })
 
     if (ap.type === 'omni') {
       group.add(new Konva.Circle({
-        x: pos.x,
-        y: pos.y,
+        x: 0,
+        y: 0,
         radius: 14,
         fill: '#2ecc71',
         stroke: '#27ae60',
@@ -46,15 +47,15 @@ export class APLayer {
       }))
 
       group.add(new Konva.Circle({
-        x: pos.x,
-        y: pos.y,
+        x: 0,
+        y: 0,
         radius: 6,
         fill: '#fff',
       }))
 
       group.add(new Konva.Text({
-        x: pos.x - 4,
-        y: pos.y - 4,
+        x: -4,
+        y: -4,
         text: 'AP',
         fontSize: 8,
         fill: '#27ae60',
@@ -67,19 +68,19 @@ export class APLayer {
       const coneLen = 50
 
       group.add(new Konva.Circle({
-        x: pos.x,
-        y: pos.y,
+        x: 0,
+        y: 0,
         radius: 14,
         fill: '#e74c3c',
         stroke: '#c0392b',
         strokeWidth: 2,
       }))
 
-      const endX = pos.x + Math.cos(rad) * coneLen
-      const endY = pos.y + Math.sin(rad) * coneLen
+      const endX = Math.cos(rad) * coneLen
+      const endY = Math.sin(rad) * coneLen
 
       group.add(new Konva.Line({
-        points: [pos.x, pos.y, endX, endY],
+        points: [0, 0, endX, endY],
         stroke: '#c0392b',
         strokeWidth: 2,
       }))
@@ -92,11 +93,11 @@ export class APLayer {
       const steps = 20
       for (let i = 0; i <= steps; i++) {
         const a = leftAngle + (rightAngle - leftAngle) * (i / steps)
-        beamPoints.push(pos.x + Math.cos(a) * beamLen, pos.y + Math.sin(a) * beamLen)
+        beamPoints.push(Math.cos(a) * beamLen, Math.sin(a) * beamLen)
       }
 
       group.add(new Konva.Line({
-        points: [pos.x, pos.y, ...beamPoints, pos.x, pos.y],
+        points: [0, 0, ...beamPoints, 0, 0],
         fill: 'rgba(231,76,60,0.15)',
         stroke: 'rgba(231,76,60,0.3)',
         strokeWidth: 1,
