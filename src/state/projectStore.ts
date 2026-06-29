@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla'
-import type { Structure, AccessPoint, Project, Frequency } from '../domain/types'
+import type { Structure, AccessPoint, Project, Frequency, BackgroundImageTransform } from '../domain/types'
 
 interface ProjectState {
   project: Project
@@ -14,6 +14,7 @@ interface ProjectState {
   removeAccessPoint: (id: string) => void
   updateAccessPoint: (ap: AccessPoint) => void
   setBackground: (img: string | undefined) => void
+  setBackgroundTransform: (t: BackgroundImageTransform) => void
   selectIds: (ids: string[]) => void
   clearSelection: () => void
   undo: () => void
@@ -123,7 +124,13 @@ export const useProjectStore = createStore<ProjectState>((set, get) => ({
   setBackground: (backgroundImage) => {
     get().pushUndo()
     set((s) => ({
-      project: { ...s.project, backgroundImage, metadata: { ...s.project.metadata, updatedAt: new Date().toISOString() } },
+      project: { ...s.project, backgroundImage, backgroundTransform: undefined, metadata: { ...s.project.metadata, updatedAt: new Date().toISOString() } },
+    }))
+  },
+
+  setBackgroundTransform: (transform) => {
+    set((s) => ({
+      project: { ...s.project, backgroundTransform: transform, metadata: { ...s.project.metadata, updatedAt: new Date().toISOString() } },
     }))
   },
 

@@ -23,6 +23,14 @@ export interface Point {
   y: number;
 }
 
+export interface BackgroundImageTransform {
+  x: number;
+  y: number;
+  scaleX: number;
+  scaleY: number;
+  rotation: number;
+}
+
 export interface Wall {
   id: string;
   type: 'wall' | 'glass' | 'door';
@@ -81,6 +89,7 @@ export interface Project {
   structures: Structure[];
   accessPoints: AccessPoint[];
   backgroundImage?: string;
+  backgroundTransform?: BackgroundImageTransform;
   grid: GridSettings;
   metadata: ProjectMetadata;
 }

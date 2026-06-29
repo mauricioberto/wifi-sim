@@ -1,3 +1,18 @@
+export interface ColorStop {
+  threshold: number
+  label: string
+  color: string
+}
+
+export const COLOR_STOPS: ColorStop[] = [
+  { threshold: -45, label: '≥ -45', color: '#0064FF' },
+  { threshold: -55, label: '-55', color: '#32CD32' },
+  { threshold: -65, label: '-65', color: '#FFD700' },
+  { threshold: -75, label: '-75', color: '#FFA500' },
+  { threshold: -85, label: '-85', color: '#DC3232' },
+  { threshold: -Infinity, label: 'sem sinal', color: '#808080' },
+]
+
 export function rssiToColor(rssi: number): [number, number, number, number] {
   if (rssi < -85) return [128, 128, 128, 100]
   if (rssi < -75) return [220, 50, 50, 180]

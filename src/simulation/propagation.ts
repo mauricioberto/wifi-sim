@@ -2,7 +2,7 @@ import type { AccessPoint, Point, Frequency, Structure } from '../domain/types'
 import { raycastObstacles } from './raycast'
 
 function pl0(freqMHz: number): number {
-  return 32.4 + 20 * Math.log10(freqMHz)
+  return 20 * Math.log10(freqMHz) - 27.56
 }
 
 function pathLossExponent(freq: Frequency): number {

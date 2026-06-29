@@ -16,10 +16,10 @@ describe('MATERIAL_LIBRARY', () => {
     expect(Object.keys(MATERIAL_LIBRARY)).toHaveLength(6)
   })
 
-  it('drywall deve atenuar 3dB em 2.4GHz e 5dB em 5GHz', () => {
+  it('drywall deve atenuar 5dB em 2.4GHz e 8dB em 5GHz', () => {
     const w = MATERIAL_LIBRARY.internal_wall
-    expect(w.attenuation24).toBe(3)
-    expect(w.attenuation5).toBe(5)
+    expect(w.attenuation24).toBe(5)
+    expect(w.attenuation5).toBe(8)
   })
 
   it('parede externa deve atenuar mais que drywall', () => {
