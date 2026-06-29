@@ -82,10 +82,10 @@ export class RulerOverlay {
     ctx.lineTo(w, 0.5)
     ctx.stroke()
 
-    const leftWorld = -stageX / scale
-    const rightWorld = (vpW - stageX) / scale
-    const lo = Math.max(0, leftWorld)
-    const hi = Math.min(WORLD_SIZE, rightWorld)
+    const leftEdgeWorld = (LEFT_RULER - stageX) / scale
+    const rightEdgeWorld = (vpW - stageX) / scale
+    const lo = Math.max(0, leftEdgeWorld)
+    const hi = Math.min(WORLD_SIZE, rightEdgeWorld)
     if (lo >= hi) return
 
     const pxPerMeter = 100 * scale
@@ -129,9 +129,9 @@ export class RulerOverlay {
     ctx.stroke()
 
     const topWorld = -stageY / scale
-    const bottomWorld = (vpH - stageY) / scale
+    const bottomEdgeWorld = ((vpH - BOTTOM_RULER) - stageY) / scale
     const lo = Math.max(0, topWorld)
-    const hi = Math.min(WORLD_SIZE, bottomWorld)
+    const hi = Math.min(WORLD_SIZE, bottomEdgeWorld)
     if (lo >= hi) return
 
     const pxPerMeter = 100 * scale
